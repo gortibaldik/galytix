@@ -16,5 +16,10 @@ Currently, the only frontend that is available out of the box is the swagger gen
 
 ## TODO
 
+I spent too much time unsuccessfuly debuging automatic download of GoogleNews vectors, and then focused too much on using Postgresql database. As of now, the database works, all the word vectors are loaded to the database and the search for word is offloaded to this source. However, regarding the phrases, I store them only in simple python arrays because I do not see any advantage of using more complicated data structures such as pandas/polars.
+
 - [ ] Automatic download of GoogleNews-vectors
 - [ ] Threaded execution of extractions to vectors.csv to see the progress
+- [ ] Right now the data pipeline is very rigid, not configurable, the individual processing steps are cached to `vectors.csv` and then to `vectors-processed.csv`, the ideal solution would be a pipeline which would remove the need for intermediate files
+- [ ] I would like to add some form of configuration, so that either the distance calculation (l2 or cosine) would be configurable from the environment variables
+- [ ] there are no tests, and I'm not sure that my code actually works. Even if I had tested it on a few cases, there are probably still some bugs, maybe even critical bugs.
