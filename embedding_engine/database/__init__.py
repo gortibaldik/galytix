@@ -3,6 +3,7 @@ from logging import getLogger
 import backoff
 import psycopg2
 from sqlalchemy import create_engine, text
+from sqlalchemy.orm import Session as SessionType
 from sqlalchemy.orm import sessionmaker
 
 from embedding_engine.config import Config
@@ -34,4 +35,4 @@ def check_table_empty(table: type[Base]):
 initialize_database()
 Session = sessionmaker(bind=engine)
 
-__all__ = ["Base", "VectorsTable", "PhrasesTable", "engine"]
+__all__ = ["Base", "VectorsTable", "PhrasesTable", "engine", "Session", "SessionType"]

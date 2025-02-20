@@ -33,8 +33,6 @@ with Session() as session:
         for p2_ix, phrase2 in enumerate(scalars):
             inter_phrase_distances[p1_ix].append(euclidean_distance.get_distance(phrase1.phrase, phrase2.phrase))
 
-print(inter_phrase_distances[0])
-
 app = FastAPI()
 
 
@@ -50,7 +48,6 @@ class NearestResponse(BaseModel):
 @app.post("/nearest")
 def find_nearest(request: NearestRequest) -> NearestResponse:
     embedding = compute_phrase_embedding(request.phrase, tokenizer)
-    print(embedding)
     nearest = euclidean_distance.get_nearest(embedding, Session())
 
     if nearest is None:

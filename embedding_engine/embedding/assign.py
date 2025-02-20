@@ -2,17 +2,15 @@ from logging import getLogger
 
 import numpy as np
 from sqlalchemy import insert, select
-from sqlalchemy.orm import Session
 
 from embedding_engine.config import Config
-from embedding_engine.database import VectorsTable, check_table_empty, engine
-from embedding_engine.database.phrases_table import PhrasesTable
+from embedding_engine.database import PhrasesTable, Session, SessionType, VectorsTable, check_table_empty
 from embedding_engine.embedding.tokenizer import Tokenizer
 
 logger = getLogger(__name__)
 
 
-def find_word_vector(word: str, session: Session):
+def find_word_vector(word: str, session: SessionType):
     statement = select(VectorsTable).where(VectorsTable.word == word)
     result = session.execute(statement)
     words = list(result.scalars())
@@ -32,7 +30,7 @@ def compute_phrase_embedding(phrase: str | PhrasesTable, tokenizer: Tokenizer):
 
     words = tokenizer.tokenize(phrase)
 
-    with Session(engine) as session:
+    with Session() as session:
         statement = select(PhrasesTable).where(PhrasesTable.phrase == phrase)
         result = list(session.scalars(statement))
 
@@ -60,10 +58,9 @@ def save_phrase_embeddings(tokenizer: Tokenizer):
             if i == 0:
                 continue
             phrase = line.strip()
-            print("PHRASE:", phrase)
             embedding = compute_phrase_embedding(phrase, tokenizer)
 
-            with Session(engine) as session:
+            with Session() as session:
                 statement = insert(PhrasesTable).values(phrase=phrase, embedding=embedding)
                 session.execute(statement)
                 session.commit()
