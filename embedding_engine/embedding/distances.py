@@ -58,7 +58,7 @@ class CosineDistancePhrasesRetriever(PhrasesRetriever):
         return PhrasesTable.embedding.cosine_distance(embedding).label("distance")
 
     def compute_distance(self, embedding1: np.ndarray, embedding2: np.ndarray) -> float:
-        return np.dot(embedding1, embedding2) / (np.linalg.norm(embedding1) * np.linalg.norm(embedding2))
+        return 1 - np.dot(embedding1, embedding2) / (np.linalg.norm(embedding1) * np.linalg.norm(embedding2))
 
 
 def get_phrase_retriever(tokenizer: Tokenizer) -> PhrasesRetriever:

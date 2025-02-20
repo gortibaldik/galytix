@@ -38,3 +38,5 @@ def compute_inter_phrase_distances(phrases_retriever: PhrasesRetriever):
             inter_phrase_distances.append([])
             for p2_ix, phrase2 in enumerate(scalars):
                 inter_phrase_distances[p1_ix].append(phrases_retriever.get_distance(phrase1.phrase, phrase2.phrase))
+
+    return inter_phrase_distances
