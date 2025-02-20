@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from embedding_engine.config import Config
 from embedding_engine.database import PhrasesTable
-from embedding_engine.embedding.assign import compute_phrase_embedding
+from embedding_engine.embedding.compute import compute_phrase_embedding
 from embedding_engine.embedding.tokenizer import Tokenizer
 
 
