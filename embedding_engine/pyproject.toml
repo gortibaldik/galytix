@@ -17,6 +17,7 @@ exclude=["data"]
 [tool.ruff]
 target-version = "py312"
 line-length = 120
+fix = true
 extend-exclude = [".git"]
 
 [tool.mypy]

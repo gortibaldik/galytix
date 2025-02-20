@@ -1,6 +1,8 @@
-from embedding_engine.database.base import Base
 from pgvector.sqlalchemy import Vector
-from sqlalchemy.orm import mapped_column, Mapped
+from sqlalchemy.orm import Mapped, mapped_column
+
+from embedding_engine.database.base import Base
+
 
 class PhrasesTable(Base):
     __tablename__ = "phrases"

@@ -1,5 +1,5 @@
 class Config:
-    # these files should be put in the data/ directory 
+    # these files should be put in the data/ directory
     save_path: str = "data/GoogleNews-vectors-negative300.bin.gz"
     phrases_path: str = "data/phrases.csv"
 

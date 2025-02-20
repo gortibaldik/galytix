@@ -1,14 +1,16 @@
-from sqlalchemy import create_engine
-from embedding_engine.database.base import Base
-from embedding_engine.database.vectors_table import VectorsTable
-from embedding_engine.database.phrases_table import PhrasesTable
-from embedding_engine.config import Config
-from sqlalchemy import text
-from sqlalchemy.orm import sessionmaker
 from logging import getLogger
+
+from sqlalchemy import create_engine, text
+from sqlalchemy.orm import sessionmaker
+
+from embedding_engine.config import Config
+from embedding_engine.database.base import Base
+from embedding_engine.database.phrases_table import PhrasesTable
+from embedding_engine.database.vectors_table import VectorsTable
 
 logger = getLogger(__name__)
 engine = create_engine(Config.db_connection_str)
+
 
 def initialize_database():
     # if the database schema is not initialized, initialize
@@ -19,7 +21,7 @@ def initialize_database():
             Base.metadata.create_all(connection)
 
 
-def check_table_empty(table: Base):
+def check_table_empty(table: type[Base]):
     with Session() as session:
         value = session.query(table).first()
         return value is None
@@ -28,9 +30,4 @@ def check_table_empty(table: Base):
 initialize_database()
 Session = sessionmaker(bind=engine)
 
-__all__ = [
-    "Base",
-    "VectorsTable",
-    "PhrasesTable",
-    "engine"
-]
+__all__ = ["Base", "VectorsTable", "PhrasesTable", "engine"]

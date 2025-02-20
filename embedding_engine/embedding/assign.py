@@ -1,14 +1,16 @@
+from logging import getLogger
+
 import numpy as np
-from embedding_engine.config import Config
-from embedding_engine.database import check_table_empty, engine, VectorsTable
 from sqlalchemy import insert, select
 from sqlalchemy.orm import Session
 
+from embedding_engine.config import Config
+from embedding_engine.database import VectorsTable, check_table_empty, engine
 from embedding_engine.database.phrases_table import PhrasesTable
 from embedding_engine.embedding.tokenizer import Tokenizer
-from logging import getLogger
 
 logger = getLogger(__name__)
+
 
 def find_word_vector(word: str, session: Session):
     statement = select(VectorsTable).where(VectorsTable.word == word)
@@ -17,11 +19,12 @@ def find_word_vector(word: str, session: Session):
 
     if not words:
         return None
-    
+
     if len(words) > 1:
         raise ValueError(f"Found many entries for '{word}' ({words})")
-    
+
     return words[0].embedding
+
 
 def compute_phrase_embedding(phrase: str | PhrasesTable, tokenizer: Tokenizer):
     if isinstance(phrase, PhrasesTable):
@@ -38,14 +41,15 @@ def compute_phrase_embedding(phrase: str | PhrasesTable, tokenizer: Tokenizer):
 
         embeddings = []
         for word in words:
-            if (embedding:=find_word_vector(word, session)) is not None:
+            if (embedding := find_word_vector(word, session)) is not None:
                 embeddings.append(embedding)
-        
+
     if not embeddings:
         raise NotImplementedError("No embeddings found for the sequence")
 
     logger.warning("COMPUTING EMBEDDING")
     return np.mean(embeddings, axis=0)
+
 
 def save_phrase_embeddings(tokenizer: Tokenizer):
     if not check_table_empty(PhrasesTable):
@@ -62,5 +66,5 @@ def save_phrase_embeddings(tokenizer: Tokenizer):
 
             with Session(engine) as session:
                 statement = insert(PhrasesTable).values(phrase=phrase, embedding=embedding)
-                result = session.execute(statement)
+                session.execute(statement)
                 session.commit()
