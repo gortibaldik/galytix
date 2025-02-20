@@ -1,0 +1,48 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "embedding-engine"
+version = "0.1.0"
+readme = "README.md"
+requires-python = ">=3.12"
+
+[tool.setuptools.dynamic]
+dependencies = { file = ["requirements.txt"] }
+
+[tool.setuptools.packages.find]
+exclude=["data"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 120
+extend-exclude = [".git"]
+
+[tool.mypy]
+python_version = "3.12"
+ignore_missing_imports = true
+scripts_are_modules= true
+
+[tool.ruff.lint]
+# Flake8 = PyFlakes, pycodestyle, Batchelder’s McCabe script
+# F: Pyflakes
+# E, W: Pycodestyle
+# D: Pydocstyle rules, limiting to those that adhere to the Google convention via `convention = "google"`
+# I: Isort
+select = ["I", "F", "E", "W", "D"]
+extend-ignore = ["E203"]
+
+# On top of the Google convention, disable these:
+# D100: Missing docstring in public module
+# D101: Missing docstring in public class
+# D102: Missing docstring in public method
+# D103: Missing docstring in public function
+# D104: Missing docstring in public package
+# D105: Missing docstring in magic method
+# D107: Missing docstring in init
+# D212: Multi-line docstring summary should start at the first line
+ignore = ["D100","D101","D102","D103","D104","D105","D107","D212"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"

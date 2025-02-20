@@ -1,0 +1,32 @@
+services:
+  embedding_engine:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./data/:/usr/src/app/data
+    tty: true
+    stdin_open: true
+    environment:
+      - PYTHONUNBUFFERED=1
+    depends_on:
+      - postgres
+    ports:
+      - 5000:5000
+
+  postgres:
+    image: ankane/pgvector:latest
+    hostname: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./docker/postgres-init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - 5432:5432
+
+volumes:
+  pg_data:
+    external: false

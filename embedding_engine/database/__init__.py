@@ -1,0 +1,36 @@
+from sqlalchemy import create_engine
+from embedding_engine.database.base import Base
+from embedding_engine.database.vectors_table import VectorsTable
+from embedding_engine.database.phrases_table import PhrasesTable
+from embedding_engine.config import Config
+from sqlalchemy import text
+from sqlalchemy.orm import sessionmaker
+from logging import getLogger
+
+logger = getLogger(__name__)
+engine = create_engine(Config.db_connection_str)
+
+def initialize_database():
+    # if the database schema is not initialized, initialize
+    with engine.begin() as connection:
+        connection.execute(text("CREATE extension IF NOT EXISTS vector;"))
+        if not engine.dialect.has_table(connection, VectorsTable.__tablename__):
+            logger.warning("CREATING DATABASE")
+            Base.metadata.create_all(connection)
+
+
+def check_table_empty(table: Base):
+    with Session() as session:
+        value = session.query(table).first()
+        return value is None
+
+
+initialize_database()
+Session = sessionmaker(bind=engine)
+
+__all__ = [
+    "Base",
+    "VectorsTable",
+    "PhrasesTable",
+    "engine"
+]
