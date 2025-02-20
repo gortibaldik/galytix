@@ -13,4 +13,6 @@ class Config:
     extracted_processed_path: str = "data/vectors-processed.csv"
     db_connection_str: str = "postgresql+psycopg2://postgres:postgres@postgres:5432/embedding_engine"
 
+    # configuration values that influence the distance calculation
     distance_calc: Literal["L2", "Cosine"] = "Cosine"
+    tokenizer: Literal["V1", "V2"] = "V2"

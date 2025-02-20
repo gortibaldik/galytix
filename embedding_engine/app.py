@@ -7,7 +7,7 @@ from embedding_engine.database import Session
 from embedding_engine.database.phrases_table import PhrasesTable
 from embedding_engine.embedding.assign import compute_phrase_embedding, save_phrase_embeddings
 from embedding_engine.embedding.distances import get_phrase_retriever
-from embedding_engine.embedding.tokenizer import Tokenizer
+from embedding_engine.embedding.tokenizer import get_tokenizer
 from embedding_engine.load_vectors import GoogleDriveVectorsDownloader
 
 downloader = GoogleDriveVectorsDownloader(
@@ -20,7 +20,7 @@ downloader.download()
 downloader.extract()
 downloader.insert_into_db()
 
-tokenizer = Tokenizer()
+tokenizer = get_tokenizer()
 save_phrase_embeddings(tokenizer)
 euclidean_distance = get_phrase_retriever(tokenizer)
 
