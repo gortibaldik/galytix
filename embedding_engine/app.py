@@ -1,5 +1,3 @@
-import time
-
 from fastapi import FastAPI
 from pydantic import BaseModel
 from sqlalchemy import select
@@ -12,7 +10,6 @@ from embedding_engine.embedding.distances import EuclideanDistancePhrasesRetriev
 from embedding_engine.embedding.tokenizer import Tokenizer
 from embedding_engine.load_vectors import GoogleDriveVectorsDownloader
 
-time.sleep(5.0)
 downloader = GoogleDriveVectorsDownloader(
     url=Config.drive_url,
     save_path=Config.save_path,

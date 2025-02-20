@@ -12,6 +12,21 @@ logger = getLogger(__name__)
 
 
 class GoogleDriveVectorsDownloader:
+    """Download and preprocess files from Google Drive.
+
+    Preprocessing steps include:
+    1. reloading from binary format to the .csv format
+    2. reloading from .csv format to .csv format that can be digested by psycopg2 to insert into postgresql database
+    3. inserting word vectors into the postgresql database
+
+    Args:
+        url (str): google drive url for download of the vector file
+        save_path (str): path where the downloaded google drive archive should be saved
+        extracted_path (str): path where the raw extracted data will be saved
+        extracted_processed_path (str): path where the result of the first preprocessing step is saved
+        vectors_limit (int): number of vectors to load from the google drive archive
+    """
+
     def __init__(
         self,
         url: str,
@@ -31,6 +46,10 @@ class GoogleDriveVectorsDownloader:
         self.vectors_limit = vectors_limit
 
     def download(self):
+        """Download data from the google drive archive.
+
+        No-op if self.save_path exists.
+        """
         if Path(self.save_path).exists():
             return
 
@@ -43,6 +62,10 @@ class GoogleDriveVectorsDownloader:
             ) from e
 
     def extract(self):
+        """Extract data from downloaded google drive archive and preprocess them to csv format."""
+        if not Path(self.save_path).exists():
+            raise FileNotFoundError(f"'{self.save_path}' should exist before extraction. Did you run self.download() ?")
+
         if not Path(self.extracted_path).exists():
             wv = KeyedVectors.load_word2vec_format(self.save_path, binary=True, limit=self.vectors_limit)
             wv.save_word2vec_format(self.extracted_path)
@@ -60,9 +83,17 @@ class GoogleDriveVectorsDownloader:
             logger.warning("PROCESSING FINISHED")
 
     def insert_into_db(self):
+        """Insert extracted data to the postgresql database."""
         if not check_table_empty(VectorsTable):
             logger.warning("Word vectors already put into database, SKIPPING")
             return
+
+        if not Path(self.extracted_processed_path).exists():
+            raise FileNotFoundError(
+                f"'{self.extracted_processed_path}' should exist before insertion into db. Did you run self.extract() ?"
+            )
+
+        logger.warning("INSERTING word vectors DATA INTO DATABASE")
 
         connection = engine.raw_connection()
         cursor = connection.cursor()
@@ -72,3 +103,4 @@ class GoogleDriveVectorsDownloader:
             cursor.copy_expert(cmd, f)
 
         connection.commit()
+        logger.warning("word vectors INSERTED")

@@ -1,5 +1,7 @@
 from logging import getLogger
 
+import backoff
+import psycopg2
 from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 
@@ -12,6 +14,7 @@ logger = getLogger(__name__)
 engine = create_engine(Config.db_connection_str)
 
 
+@backoff.on_exception(wait_gen=backoff.expo, max_time=120, exception=psycopg2.OperationalError)
 def initialize_database():
     # if the database schema is not initialized, initialize
     with engine.begin() as connection:
@@ -19,6 +22,7 @@ def initialize_database():
         if not engine.dialect.has_table(connection, VectorsTable.__tablename__):
             logger.warning("CREATING DATABASE")
             Base.metadata.create_all(connection)
+    logger.warning("CREATED DATABASE")
 
 
 def check_table_empty(table: type[Base]):

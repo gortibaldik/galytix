@@ -47,7 +47,6 @@ def compute_phrase_embedding(phrase: str | PhrasesTable, tokenizer: Tokenizer):
     if not embeddings:
         raise NotImplementedError("No embeddings found for the sequence")
 
-    logger.warning("COMPUTING EMBEDDING")
     return np.mean(embeddings, axis=0)
 
 
